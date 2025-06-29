@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIUB CGPA Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* Light green background */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0f2f7;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981; /* Emerald 500 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669; /* Emerald 600 */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
+    <div class="bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-lg lg:max-w-xl border border-green-200">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 text-emerald-700">AIUB CGPA Calculator</h1>
+
+        <form id="cgpaForm" class="space-y-4">
+            <!-- Present CGPA -->
+            <div>
+                <label for="presentCgpa" class="block text-sm font-medium text-gray-700 mb-1">Present CGPA:</label>
+                <input type="number" id="presentCgpa" step="0.01" min="0" max="4"
+                       class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50"
+                       placeholder="e.g., 3.50" required>
+            </div>
+
+            <!-- Credit Completed -->
+            <div>
+                <label for="creditCompleted" class="block text-sm font-medium text-gray-700 mb-1">Credit Completed:</label>
+                <input type="number" id="creditCompleted" step="1" min="0"
+                       class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50"
+                       placeholder="e.g., 60" required>
+            </div>
+
+            <!-- No. of Semesters Completed -->
+            <div>
+                <label for="semestersCompleted" class="block text-sm font-medium text-gray-700 mb-1">No. of Semesters Completed (Do not count this semester):</label>
+                <input type="number" id="semestersCompleted" step="1" min="0"
+                       class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50"
+                       placeholder="e.g., 4" required>
+            </div>
+
+            <!-- Total Credit Taken in This Semester -->
+            <div>
+                <label for="totalCreditThisSemester" class="block text-sm font-medium text-gray-700 mb-1">Total Credit Taken in This Semester:</label>
+                <input type="number" id="totalCreditThisSemester" step="1" min="1"
+                       class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50"
+                       placeholder="e.g., 12" required>
+            </div>
+
+            <!-- Number of 3, 2, and 1 Credit Courses -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="num3CreditCourses" class="block text-sm font-medium text-gray-700 mb-1">No. of 3 Credit Courses:</label>
+                    <input type="number" id="num3CreditCourses" step="1" min="0" value="0"
+                           class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50">
+                </div>
+                <div>
+                    <label for="num2CreditCourses" class="block text-sm font-medium text-gray-700 mb-1">No. of 2 Credit Courses:</label>
+                    <input type="number" id="num2CreditCourses" step="1" min="0" value="0"
+                           class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50">
+                </div>
+                <div>
+                    <label for="num1CreditCourses" class="block text-sm font-medium text-gray-700 mb-1">No. of 1 Credit Courses:</label>
+                    <input type="number" id="num1CreditCourses" step="1" min="0" value="0"
+                           class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50">
+                </div>
+            </div>
+
+            <!-- Dynamic Grade Inputs Container -->
+            <div id="gradeInputsContainer" class="space-y-3 p-4 border border-dashed border-green-300 rounded-md bg-green-50">
+                <p class="text-sm text-gray-600 text-center">Enter the number of courses above to generate grade input fields.</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="text-red-600 text-sm mt-2 hidden p-2 bg-red-100 border border-red-400 rounded-md"></div>
+
+            <!-- Calculate Button -->
+            <button type="submit"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-75">
+                Calculate CGPA
+            </button>
+        </form>
+
+        <!-- Results Display -->
+        <div class="mt-8 p-6 bg-emerald-50 rounded-xl border border-emerald-300 shadow-inner space-y-4">
+            <h2 class="text-2xl font-semibold text-emerald-800 text-center mb-4">Results</h2>
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-100 p-3 rounded-lg shadow-sm">
+                <p class="text-lg font-medium text-emerald-700">This Semester CGPA:</p>
+                <p id="semesterCgpaOutput" class="text-xl font-bold text-emerald-900">N/A</p>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-100 p-3 rounded-lg shadow-sm">
+                <p class="text-lg font-medium text-emerald-700">Final Cumulative CGPA:</p>
+                <p id="finalCgpaOutput" class="text-xl font-bold text-emerald-900">N/A</p>
+            </div>
+            <p class="text-sm text-gray-600 mt-4 text-center">
+                <span class="font-semibold">Note:</span> The final cumulative CGPA is calculated using the formula:
+                (Present CGPA * No. of Semesters Completed + This Semester CGPA) / (No. of Semesters Completed + 1).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Grade to GPA point mapping
+        const gradeToGpa = {
+            'A+': 4.00, 'A': 3.75, 'B+': 3.50, 'B': 3.25, 'C+': 3.00,
+            'C': 2.75, 'D+': 2.50, 'D': 2.25, 'F': 0.00
+        };
+
+        // Get elements
+        const num3CreditCoursesInput = document.getElementById('num3CreditCourses');
+        const num2CreditCoursesInput = document.getElementById('num2CreditCourses');
+        const num1CreditCoursesInput = document.getElementById('num1CreditCourses');
+        const gradeInputsContainer = document.getElementById('gradeInputsContainer');
+        const totalCreditThisSemesterInput = document.getElementById('totalCreditThisSemester');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const semesterCgpaOutput = document.getElementById('semesterCgpaOutput');
+        const finalCgpaOutput = document.getElementById('finalCgpaOutput');
+        const cgpaForm = document.getElementById('cgpaForm');
+
+        /**
+         * Generates dynamic input fields for grades based on the number of courses.
+         * @param {number} count - The number of courses.
+         * @param {number} credits - The credit value for each course (e.g., 3, 2, 1).
+         * @param {string} prefix - A prefix for the input ID (e.g., 'grade3', 'grade2').
+         * @returns {string} HTML string for the input fields.
+         */
+        function generateGradeInputs(count, credits, prefix) {
+            let html = '';
+            for (let i = 0; i < count; i++) {
+                html += `
+                    <div class="flex items-center space-x-2">
+                        <label for="${prefix}_${i}" class="block text-sm font-medium text-gray-700 w-24">Grade for ${credits} Credit Course ${i + 1}:</label>
+                        <select id="${prefix}_${i}"
+                                class="mt-1 block w-full px-3 py-2 border border-green-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-green-50"
+                                required>
+                            <option value="">Select Grade</option>
+                            <option value="A+">A+ (4.00)</option>
+                            <option value="A">A (3.75)</option>
+                            <option value="B+">B+ (3.50)</option>
+                            <option value="B">B (3.25)</option>
+                            <option value="C+">C+ (3.00)</option>
+                            <option value="C">C (2.75)</option>
+                            <option value="D+">D+ (2.50)</option>
+                            <option value="D">D (2.25)</option>
+                            <option value="F">F (0.00)</option>
+                        </select>
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        /**
+         * Renders all dynamic grade input fields.
+         */
+        function renderGradeInputs() {
+            const num3 = parseInt(num3CreditCoursesInput.value) || 0;
+            const num2 = parseInt(num2CreditCoursesInput.value) || 0;
+            const num1 = parseInt(num1CreditCoursesInput.value) || 0;
+
+            let allInputsHtml = '';
+            if (num3 > 0) {
+                allInputsHtml += `<p class="text-sm font-semibold text-emerald-700 mt-4 mb-2">3 Credit Courses:</p>`;
+                allInputsHtml += generateGradeInputs(num3, 3, 'grade3');
+            }
+            if (num2 > 0) {
+                allInputsHtml += `<p class="text-sm font-semibold text-emerald-700 mt-4 mb-2">2 Credit Courses:</p>`;
+                allInputsHtml += generateGradeInputs(num2, 2, 'grade2');
+            }
+            if (num1 > 0) {
+                allInputsHtml += `<p class="text-sm font-semibold text-emerald-700 mt-4 mb-2">1 Credit Courses:</p>`;
+                allInputsHtml += generateGradeInputs(num1, 1, 'grade1');
+            }
+
+            if (allInputsHtml === '') {
+                gradeInputsContainer.innerHTML = `<p class="text-sm text-gray-600 text-center">Enter the number of courses above to generate grade input fields.</p>`;
+            } else {
+                gradeInputsContainer.innerHTML = allInputsHtml;
+            }
+        }
+
+        // Event listeners for dynamic input generation
+        num3CreditCoursesInput.addEventListener('input', renderGradeInputs);
+        num2CreditCoursesInput.addEventListener('input', renderGradeInputs);
+        num1CreditCoursesInput.addEventListener('input', renderGradeInputs);
+
+        // Initial render of grade inputs
+        renderGradeInputs();
+
+        /**
+         * Displays an error message.
+         * @param {string} message - The error message to display.
+         */
+        function showErrorMessage(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the error message.
+         */
+        function hideErrorMessage() {
+            errorMessageDiv.classList.add('hidden');
+            errorMessageDiv.textContent = '';
+        }
+
+        /**
+         * Calculates the CGPA based on user inputs.
+         * @param {Event} event - The form submission event.
+         */
+        cgpaForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            hideErrorMessage(); // Clear previous errors
+
+            // Get all input values
+            const presentCgpa = parseFloat(document.getElementById('presentCgpa').value);
+            const creditCompleted = parseInt(document.getElementById('creditCompleted').value);
+            const semestersCompleted = parseInt(document.getElementById('semestersCompleted').value);
+            const totalCreditThisSemester = parseInt(document.getElementById('totalCreditThisSemester').value);
+            const num3CreditCourses = parseInt(num3CreditCoursesInput.value) || 0;
+            const num2CreditCourses = parseInt(num2CreditCoursesInput.value) || 0;
+            const num1CreditCourses = parseInt(num1CreditCoursesInput.value) || 0;
+
+            // Validate required fields
+            if (isNaN(presentCgpa) || isNaN(creditCompleted) || isNaN(semestersCompleted) || isNaN(totalCreditThisSemester)) {
+                showErrorMessage('Please fill in all required fields.');
+                return;
+            }
+
+            // Validate total credits taken this semester
+            const calculatedTotalCredits = (num3CreditCourses * 3) + (num2CreditCourses * 2) + (num1CreditCourses * 1);
+            if (calculatedTotalCredits !== totalCreditThisSemester) {
+                showErrorMessage(`Mismatch in credits! Total credits from courses (${calculatedTotalCredits}) do not match "Total Credit Taken in This Semester" (${totalCreditThisSemester}).`);
+                return;
+            }
+
+            let totalGradePointsThisSemester = 0;
+            let currentSemesterCreditsCounted = 0;
+
+            // Collect grades for 3 credit courses
+            for (let i = 0; i < num3CreditCourses; i++) {
+                const gradeSelect = document.getElementById(`grade3_${i}`);
+                if (!gradeSelect || !gradeSelect.value) {
+                    showErrorMessage(`Please select a grade for 3 Credit Course ${i + 1}.`);
+                    return;
+                }
+                const grade = gradeSelect.value;
+                const gpaPoint = gradeToGpa[grade];
+                if (typeof gpaPoint === 'undefined') {
+                    showErrorMessage(`Invalid grade selected for 3 Credit Course ${i + 1}.`);
+                    return;
+                }
+                totalGradePointsThisSemester += gpaPoint * 3;
+                currentSemesterCreditsCounted += 3;
+            }
+
+            // Collect grades for 2 credit courses
+            for (let i = 0; i < num2CreditCourses; i++) {
+                const gradeSelect = document.getElementById(`grade2_${i}`);
+                if (!gradeSelect || !gradeSelect.value) {
+                    showErrorMessage(`Please select a grade for 2 Credit Course ${i + 1}.`);
+                    return;
+                }
+                const grade = gradeSelect.value;
+                const gpaPoint = gradeToGpa[grade];
+                if (typeof gpaPoint === 'undefined') {
+                    showErrorMessage(`Invalid grade selected for 2 Credit Course ${i + 1}.`);
+                    return;
+                }
+                totalGradePointsThisSemester += gpaPoint * 2;
+                currentSemesterCreditsCounted += 2;
+            }
+
+            // Collect grades for 1 credit courses
+            for (let i = 0; i < num1CreditCourses; i++) {
+                const gradeSelect = document.getElementById(`grade1_${i}`);
+                if (!gradeSelect || !gradeSelect.value) {
+                    showErrorMessage(`Please select a grade for 1 Credit Course ${i + 1}.`);
+                    return;
+                }
+                const grade = gradeSelect.value;
+                const gpaPoint = gradeToGpa[grade];
+                if (typeof gpaPoint === 'undefined') {
+                    showErrorMessage(`Invalid grade selected for 1 Credit Course ${i + 1}.`);
+                    return;
+                }
+                totalGradePointsThisSemester += gpaPoint * 1;
+                currentSemesterCreditsCounted += 1;
+            }
+
+            // Final check for credits counted vs totalCreditThisSemester
+            if (currentSemesterCreditsCounted !== totalCreditThisSemester) {
+                showErrorMessage("Internal error: Credits counted from individual courses do not match total credit taken this semester. Please check your inputs.");
+                return;
+            }
+
+            // Calculate This Semester CGPA
+            let semesterCgpa = 0;
+            if (totalCreditThisSemester > 0) {
+                semesterCgpa = totalGradePointsThisSemester / totalCreditThisSemester;
+            } else {
+                showErrorMessage("Total credit taken this semester cannot be zero if courses are entered.");
+                return;
+            }
+
+            // Calculate Final Cumulative CGPA using the user's specified formula
+            // Formula: (Present CGPA * No. of Semesters Completed + This Semester CGPA) / (No. of Semesters Completed + 1)
+            let finalCgpa = 0;
+            if (semestersCompleted >= 0) { // Ensure semestersCompleted is not negative
+                finalCgpa = ((presentCgpa * semestersCompleted) + semesterCgpa) / (semestersCompleted + 1);
+            } else {
+                showErrorMessage("Number of semesters completed cannot be negative.");
+                return;
+            }
+
+            // Display results, formatted to 2 decimal places
+            semesterCgpaOutput.textContent = semesterCgpa.toFixed(2);
+            finalCgpaOutput.textContent = finalCgpa.toFixed(2);
+        });
+    </script>
+</body>
+</html>
