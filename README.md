@@ -68,6 +68,6 @@ Contributions, issues, and feature requests are welcome! Feel free to check [iss
 
 ---
 
-Developed with ❤️ by Md. Sayeed Alam (https://github.com/sayeedalam01)
+Developed with ❤️ by [Md. Sayeed Alam](https://github.com/sayeedalam01)
 
 
